@@ -1,14 +1,31 @@
 import { FC } from 'react';
+import Character from '../../characters/characters.types';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
+import {
+  addCharacterToFollowingList,
+  removeCharacterToFollowingList
+} from 'features/following/following.slices';
 
 type FollowingButtonProps = {
-  isFav: boolean;
-  onToggleFavorite: (setFav: boolean) => void;
+  character: Character;
 };
 
 const FollowingButtonComponent: FC<FollowingButtonProps> = ({
-  isFav,
-  onToggleFavorite
+  character
 }: FollowingButtonProps) => {
+  //pasar logica a un hook
+  const dispatch = useAppDispatch();
+  const followingIds = useAppSelector((state) => state.following.followingIds);
+  const isFav = followingIds.indexOf(character.id) >= 0;
+
+  const onToggleFavorite = (setFav: boolean) => {
+    if (setFav) {
+      dispatch(addCharacterToFollowingList(character.id));
+    } else {
+      dispatch(removeCharacterToFollowingList(character.id));
+    }
+  };
+
   const src = isFav ? '/images/star-filled.png' : '/images/star.png';
   const alt = isFav ? 'is_favorite' : 'is_not_favorite';
 
